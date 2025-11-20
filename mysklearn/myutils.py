@@ -1,0 +1,196 @@
+import numpy as np # use numpy's random number generation
+from mysklearn import myevaluation
+from tabulate import tabulate 
+
+def get_DOE_rating(mpg):
+        if mpg >= 45:
+            return 10
+        elif mpg < 45 and mpg >= 37:
+            return 9
+        elif mpg < 37 and mpg >= 31:
+            return 8
+        elif mpg < 31 and mpg >= 27:
+            return 7
+        elif mpg < 27 and mpg >= 24:
+            return 6
+        elif mpg < 24 and mpg >= 20:
+            return 5
+        elif mpg < 20 and mpg >= 17:
+            return 4
+        elif mpg < 17 and mpg >= 15:
+            return 3
+        elif mpg == 14:
+            return 2
+        else:
+            return 1
+
+def get_instances(mypytable, key_columns):
+    instances = []
+    indices = [i for i, col in enumerate(mypytable.column_names) if col in key_columns]
+    for i, row in enumerate(mypytable.data):
+        instances.append([row[i] for i in indices])
+
+    return instances
+        
+def get_DOE_rating_list(mpg):
+    '''
+    Takes in a list of mpg values and returns the parralel list for the DOE
+    rating
+    '''
+    doe_ratings = []
+    for val in mpg:
+        if val >= 45:
+            doe_ratings.append(10)
+        elif val < 45 and val >= 37:
+            doe_ratings.append(9)
+        elif val < 37 and val >= 31:
+            doe_ratings.append(8)
+        elif val < 31 and val >= 27:
+            doe_ratings.append(7)
+        elif val < 27 and val >= 24:
+            doe_ratings.append(6)
+        elif val < 24 and val >= 20:
+            doe_ratings.append(5)
+        elif val < 20 and val >= 17:
+            doe_ratings.append(4)
+        elif val < 17 and val >= 15:
+            doe_ratings.append(3)
+        elif val == 14:
+            doe_ratings.append(2)
+        else:
+            doe_ratings.append(1)
+            
+    return doe_ratings
+
+def output_classified_results(X_test, predictions):
+    actual = get_DOE_rating_list(X_test.get_column("mpg"))
+    for i, instance in enumerate(X_test.data):
+        print("instance:")
+        print(instance)
+        print("Class:", predictions[i], "Actual:", actual[i])
+
+
+def random_subsample(X, y, k, mykNN, myDumm):
+    X_train_samples = []
+    y_train_samples = []
+    X_test_samples = []
+    y_test_samples = []
+    knn_acc = 0
+    dum_acc = 0
+    for i in range(k):
+        X_train, X_test, y_train, y_test = myevaluation.train_test_split(X, y, test_size=0.33, random_state=None, shuffle=False)
+        mykNN.fit(X_train, y_train)
+        knn_predictions = mykNN.predict(X_test)
+        knn_actual = y_test
+        knn_acc += myevaluation.accuracy_score(knn_actual, knn_predictions, normalize=True)
+    
+
+    print("===========================================")
+    print("STEP 1: Predictive Accuracy")
+    print("===========================================")
+    print("Random Subsample (k=10, 2:1 Train/Test)")
+    print("k Nearest Neighbors Classifier: accuracy =", knn_acc / k, "error rate =", 1 - (knn_acc / k))
+    print("Dummy Classifier: accuracy =", dum_acc / k, "error rate= = ", 1 -(dum_acc / k))
+
+    return X_train_samples, X_test_samples, y_train_samples, y_test_samples
+
+def cross_val_predict(X, y, k, mykNN, myDum):
+    folds = myevaluation.kfold_split(X, k)
+    kNN_acc = 0
+    kNN_precision = 0
+    kNN_recall = 0
+    kNN_F1 = 0
+    
+    dum_acc = 0
+    dum_precision = 0
+    dum_recall = 0
+    dum_F1 = 0
+    for fold in folds:
+        X_train = [X[i] for i in fold[0]]
+        y_train = [y[i] for i in fold[0]]
+        mykNN.fit(X_train, y_train)
+        myDum.fit(X_train, y_train)
+        X_test = [X[i] for i in fold[1]]
+        y_test = [y[i] for i in fold[1]]
+        y_pred = mykNN.predict(X_test)
+        y_true = y_test
+        kNN_acc += myevaluation.accuracy_score(y_true, y_pred)
+        kNN_precision += myevaluation.binary_precision_score(y_true, y_pred)
+        kNN_recall += myevaluation.binary_recall_score(y_true, y_pred)
+        kNN_F1 += myevaluation.binary_f1_score(y_true, y_pred)
+        
+        y_pred = myDum.predict(y_test)
+        dum_acc += myevaluation.accuracy_score(y_true, y_pred)
+        dum_precision += myevaluation.binary_precision_score(y_true, y_pred)
+        dum_recall += myevaluation.binary_recall_score(y_true, y_pred)
+        dum_F1 += myevaluation.binary_f1_score(y_true, y_pred)
+
+    print("===================================================")
+    print("Predictive Accuracy, Precision, Recall, F1 Measure")
+    print("===================================================")
+    print("10-Fold Cross Validation")
+    print("k Nearest Neighbors Classifier: accuracy =", kNN_acc / k, "error rate =", 1 -(kNN_acc / k))
+    print("k Nearest Neighbors Classifier: Precision =", kNN_precision / k, "error rate =", 1 -(kNN_precision / k))
+    print("k Nearest Neighbors Classifier: Recall =", kNN_recall / k, "error rate =", 1 -(kNN_recall / k))
+    print("k Nearest Neighbors Classifier: F1 =", kNN_F1 / k, "error rate =", 1 -(kNN_F1 / k))
+    print("Dummy Classifier: accuracy =", dum_acc / k, "error rate =", 1 -(dum_acc / k))
+    print("Dummy Classifier: Precision =", dum_precision / k, "error rate =", 1 -(dum_precision / k))
+    print("Dummy Classifier: Recall =", dum_recall / k, "error rate =", 1 -(dum_recall / k))
+    print("Dummy Classifier: F1 Measure =", dum_F1 / k, "error rate =", 1 -(dum_F1 / k))
+    
+
+def bootstrap_method(X, y, k, mykNN, myDum):
+    knn_acc = 0
+    dum_acc = 0
+    for i in range(k):
+        X_train, X_test, y_train, y_test = myevaluation.bootstrap_sample(X, y)
+        mykNN.fit(X_train, y_train)
+        myDum.fit(X_train, y_train)
+        y_pred = mykNN.predict(X_test)
+        y_true = y_test
+        knn_acc += myevaluation.accuracy_score(y_true, y_pred)
+        y_pred = myDum.predict(X_test)
+        dum_acc += myevaluation.accuracy_score(y_true, y_pred)
+        
+
+    print("===========================================")
+    print("STEP 3: Predictive Accuracy")
+    print("===========================================")
+    print("k=10 Bootstrap Method")
+    print("k Nearest Neighbors Classifier: accuracy =", knn_acc / k, "error rate =", 1 -(knn_acc / k))
+    print("Dummy Classifier: accuracy =", dum_acc / k, "error rate =", 1 -(dum_acc / k))
+
+def matrix_method(X, y, k, mykNN, myDum):
+    folds = myevaluation.kfold_split(X, k)
+    for fold in folds:
+        X_train = [X[i] for i in fold[0]]
+        y_train = [y[i] for i in fold[0]]
+        mykNN.fit(X_train, y_train)
+        myDum.fit(X_train, y_train)
+        X_test = [X[i] for i in fold[1]]
+        y_test = [y[i] for i in fold[1]]
+        y_pred = mykNN.predict(X_test)
+        y_true = y_test
+        knn_matrix = [[0 for i in range(10)]for i in range(10)]
+        dum_matrix = [[0 for i in range(10)]for i in range(10)]
+        for true, pred in zip(y_true, y_pred):
+            knn_matrix[true - 1][pred - 1] += 1
+            
+        
+        y_pred = myDum.predict(y_test)
+        for true, pred in zip(y_true, y_pred):
+            dum_matrix[true - 1][pred - 1] += 1
+
+    knn_header = "naive matrix"
+    knn_table = tabulate(knn_matrix, knn_header, tablefmt="grid")
+    dum_header = "dum matrix"
+    dum_table = tabulate(dum_matrix, dum_header, tablefmt="grid")
+    print(dum_table)
+
+
+
+
+
+
+
+
