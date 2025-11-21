@@ -505,6 +505,34 @@ class MyPyTable:
 
         return self
 
-# TODO: copy your mypytable.py solution from PA2-PA4 here
+    def get_totals(self, team_name):
+        n_cols = len(self.column_names)
+        sums = [team_name] + [0] * n_cols
+        print(sums)
+        totals = []
+        for row in self.data:
+            for i, val in enumerate(row):
+                if i == 0:
+                    if val == 'W':
+                        sums[1] += 1
+                else:
+                    sums[i + 1] += val
+                
+        totals.append(sums)
+        self.data = totals
+        self.column_names[0] = "Wins"
+        new_col_names = []
+        for i in range(len(self.column_names) + 1):
+            if i == 0:
+                new_col_names.append("Team")
+            else:
+                new_col_names.append(self.column_names[i - 1])
+        self.column_names = new_col_names
+        return self
 
-# TODO: copy your mypytable.py solution from PA2-PA5 here
+    def save_DATA_to_file(self, filename):
+        with open(filename, "a", newline="") as myFile:
+            the_writer = csv.writer(myFile)
+            for row in self.data:
+                the_writer.writerow(row)
+
