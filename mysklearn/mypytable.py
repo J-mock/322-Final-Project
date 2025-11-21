@@ -4,7 +4,8 @@ import csv
 from tabulate import tabulate
 
 class MyPyTable:
-    """Represents a 2D table of data with column names.
+    """
+    Represents a 2D table of data with column names.
 
     Attributes:
         column_names (list of str): M column names
@@ -464,8 +465,43 @@ class MyPyTable:
         for i, row in enumerate(self.data):
             if i in indices:
                 return_rows.append(row)
+            
+
 
         return return_rows
+    
+    def drop_column(self, col_names):
+        '''
+        Arguements: self to change the myppytable object
+        col_names : list of strings correlating to the column names to drop
+
+
+        returns self
+        '''
+        cols_to_drop_idx = []
+        new_col_names = []
+        #col_check =[]
+        for i, col in enumerate(self.column_names):
+            if col in col_names:
+                cols_to_drop_idx.append(i)
+            else:
+                new_col_names.append(col)
+                
+        self.column_names = new_col_names
+        if len(cols_to_drop_idx) != len(col_names):
+            print("Did not recognize some column")
+
+
+
+        new_table = []
+        for row in self.data:
+            new_row = []
+            for i, item in enumerate(row):
+                if i not in cols_to_drop_idx:
+                    new_row.append(item)
+            new_table.append(new_row)
+    
+
 # TODO: copy your mypytable.py solution from PA2-PA4 here
 
 # TODO: copy your mypytable.py solution from PA2-PA5 here

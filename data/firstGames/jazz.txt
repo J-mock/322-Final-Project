@@ -1,4 +1,4 @@
-G,Date,Start (ET),,,,Opponent,,,Tm,Opp,W,L,Streak,Attend.,LOG,Notes
+G,Date,Start (ET),,,,Opponent,W/L,,Tm,Opp,W,L,Streak,Attend.,LOG,Notes
 1,Wed Oct 23 2024,9:00p,,Box Score,,Memphis Grizzlies,L,,124,126,0,1,L 1,18175,2:33,
 2,Fri Oct 25 2024,9:30p,,Box Score,,Golden State Warriors,L,,86,127,0,2,L 2,18175,2:07,
 3,Mon Oct 28 2024,8:30p,,Box Score,@,Dallas Mavericks,L,,102,110,0,3,L 3,19811,2:16,

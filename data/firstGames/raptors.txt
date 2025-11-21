@@ -1,4 +1,4 @@
-G,Date,Start (ET),,,,Opponent,,,Tm,Opp,W,L,Streak,Attend.,LOG,Notes
+G,Date,Start (ET),,,,Opponent,W/L,,Tm,Opp,W,L,Streak,Attend.,LOG,Notes
 1,Wed Oct 23 2024,7:30p,,Box Score,,Cleveland Cavaliers,L,,106,136,0,1,L 1,19800,2:18,
 2,Fri Oct 25 2024,7:00p,,Box Score,,Philadelphia 76ers,W,,115,107,1,1,W 1,18345,2:47,
 3,Sat Oct 26 2024,8:00p,,Box Score,@,Minnesota Timberwolves,L,,101,112,1,2,L 1,18978,2:12,

@@ -1,4 +1,4 @@
-G,Date,Start (ET),,,,Opponent,,,Tm,Opp,W,L,Streak,Attend.,LOG,Notes
+G,Date,Start (ET),,,,Opponent,W/L,,Tm,Opp,W,L,Streak,Attend.,LOG,Notes
 1,Thu Oct 24 2024,7:00p,,Box Score,,Boston Celtics,L,,102,122,0,1,L 1,18610,2:11,
 2,Sat Oct 26 2024,7:00p,,Box Score,,Cleveland Cavaliers,L,,116,135,0,2,L 2,15156,2:23,
 3,Mon Oct 28 2024,7:30p,,Box Score,@,Atlanta Hawks,W,,121,119,1,2,W 1,14566,2:26,

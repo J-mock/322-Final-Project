@@ -1,4 +1,4 @@
-G,Date,Start (ET),,,,Opponent,,,Tm,Opp,W,L,Streak,Attend.,LOG,Notes
+G,Date,Start (ET),,,,Opponent,W/L,,Tm,Opp,W,L,Streak,Attend.,LOG,Notes
 1,Thu Oct 24 2024,7:30p,,Box Score,@,Dallas Mavericks,L,,109,120,0,1,L 1,20373,2:18,
 2,Sat Oct 26 2024,8:30p,,Box Score,,Houston Rockets,W,,109,106,1,1,W 1,18715,2:26,
 3,Mon Oct 28 2024,8:00p,,Box Score,,Houston Rockets,L,,101,106,1,2,L 1,17519,2:23,
