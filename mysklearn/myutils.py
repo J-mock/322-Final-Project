@@ -188,7 +188,23 @@ def matrix_method(X, y, k, mykNN, myDum):
     print(dum_table)
 
 
+def get_reg_season_games(mypytable):
+    n_row, _ = mypytable.get_shape()
+    if n_row > 81:
+        drop_indices = list(range(82, n_row))
+        mypytable.drop_rows(drop_indices)
+    
+    return mypytable
 
+def get_first_n_games(mypytable, n):
+    n_row, _ = mypytable.get_shape()
+    drop_indices = list(range(n, n_row))
+    mypytable.drop_rows(drop_indices)
+    
+    return mypytable
+
+
+    
 
 
 

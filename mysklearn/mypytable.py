@@ -120,7 +120,7 @@ class MyPyTable:
             
         self.data = new_table
         
-        pass # TODO: test
+        return self
 
     def load_from_file(self, filename):
         """Load column names and data from a CSV file.
@@ -488,8 +488,8 @@ class MyPyTable:
                 new_col_names.append(col)
                 
         self.column_names = new_col_names
-        if len(cols_to_drop_idx) != len(col_names):
-            print("Did not recognize some column")
+        #if len(cols_to_drop_idx) != len(col_names):
+         #   print("Did not recognize some column")
 
 
 
@@ -500,7 +500,10 @@ class MyPyTable:
                 if i not in cols_to_drop_idx:
                     new_row.append(item)
             new_table.append(new_row)
-    
+
+        self.data = new_table
+
+        return self
 
 # TODO: copy your mypytable.py solution from PA2-PA4 here
 
