@@ -476,6 +476,37 @@ def tdidt_predict(tree, instance, header):
         
         if instance_value == value:
             return tdidt_predict(subtree, instance, header)
+        
+def bin_nba_data(data):
+    binned_data = []
+    num_cols = len(data[0])
+    cols = [list(col) for col in zip(*data)]
+    # Now have list of lists cols
+    cutoffs = []
+    num_vals = len(cols[0])
+    for col in cols:
+        cutoff = []
+        sorted_col = sorted(col)
+        # Value at index 1/3 
+        pct_33 = sorted_col[int(num_vals * 1/3)]
+        # Value at index 2/3
+        pct_66 = sorted_col[int(num_vals * 2/3)]
+        cutoff.append(pct_33)
+        cutoff.append(pct_66)
+        cutoffs.append(cutoff)
+    
+    for cutoff, col in zip(cutoffs, cols):
+        for i, val in enumerate(col):
+            if val < cutoff[0]:
+                col[i] = "bad"
+            elif val > cutoff[1]:
+                col[i] = "good"
+            else:
+                col[i] = "average"
+    
+    binned_data = [list(row) for row in zip(*cols)]
+
+    return binned_data
 
 
 

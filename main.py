@@ -127,6 +127,11 @@ plt.hist(xs, bins=10, edgecolor='black')
 plt.title("Amount of teams with N wins through 20 games")
 plt.xlabel("Number of wins")
 plt.ylabel("Number of teams")
+
+X = myutils.get_instances(nba_data, ["Wins"])
+X = myutils.bin_nba_data(X)
+print(X)
+#myutils.bin_nba_data(nba_data.data)
 '''
 xs = auto_table.get_column("model year")
 plt.hist(xs, bins=10, edgecolor='black')
