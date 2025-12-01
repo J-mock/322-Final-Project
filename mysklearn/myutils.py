@@ -1,6 +1,8 @@
 import numpy as np # use numpy's random number generation
 from mysklearn import myevaluation
 from tabulate import tabulate 
+import matplotlib.pyplot as plt
+
 
 def get_DOE_rating(mpg):
         if mpg >= 45:
@@ -202,6 +204,34 @@ def get_first_n_games(mypytable, n):
     mypytable.drop_rows(drop_indices)
     
     return mypytable
+
+def get_scatter(x_col, y_col, table):
+    plt.figure()
+    xs = table.get_column(x_col)
+    ys = table.get_column(y_col)
+    plt.xlim(min(xs) * 0.8, max(xs) * 1.2)
+    plt.ylim(min(ys) * 0.8, max(ys) * 1.2)
+    plt.xlabel(x_col)
+    plt.ylabel(y_col)
+    
+    plt.plot(xs, ys, "b.")
+
+def create_boxplots(table):
+    plt.figure()
+    years = set(table.get_column("model year"))
+    # Now have an unorded set of each year
+    mpg_by_year = []
+    year_index = table.column_names.index("model year")
+    mpg_index = table.column_names.index("mpg")
+    for year in years:
+        add_mpgs = []
+        for rows in table.data:
+            if rows[year_index] == year:
+                add_mpgs.append(rows[mpg_index])
+        mpg_by_year.append(add_mpgs)
+
+    plt.boxplot(mpg_by_year, years)
+
 
 
     

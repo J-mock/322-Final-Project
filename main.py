@@ -58,7 +58,16 @@ alphabet_teams = ['Atlanta Hawks', 'Boston Celtics', 'Brooklyn Nets', 'Charlotte
         'New Orleans Pelicans', 'New York Knicks', 'Oklahoma City Thunder', 'Orlando Magic', 'Philadelphia 76ers',
         'Phoenix Suns', 'Portland Trailblazers', 'Sacramento Kings', 'San Antonio Spurs', 'Toronto Raptors', 'Utah Jazz', 'Washington Wizards']
 
+# can use this array for testing teams making the playoffs
+# (y_train)
+# X_train is from the file we build
+# Can manually make some X and y test or use the sampling methods (probably best option)
+playoffs_made_test = ['no', 'yes', 'no', 'no', 'no', 'yes', 'no', 'yes', 'yes', 'yes', 'yes', 'yes', 'yes', 'yes', 'yes',
+                      'yes', 'yes', 'yes', 'no', 'yes', 'yes', 'no', 'no', 'no', 'no', 'no', 'no', 'no', 'no', 'no']
 
+ # result = [list(pair) for pair in zip(alphabet_teams, playoffs_made_test)]
+# print(result)
+'''
 hawks = MyPyTable().load_from_file("data/otherFirst/Atl_Hawks.txt")
 hawks.drop_column(cols_to_drop)
 myutils.get_first_n_games(hawks, 20)
@@ -79,6 +88,7 @@ celtics.save_DATA_to_file("data/output/trial1.txt")
 print()
 print()
 print()
+'''
 folder = Path("data/otherFirst/")
 files = sorted(folder.glob("*.txt"))  # alphabetical order
 
@@ -89,7 +99,7 @@ for i, team in enumerate(team_tables):
     team.drop_column(cols_to_drop)
     myutils.get_first_n_games(team, 20)
     team.convert_to_numeric()
-    print(team.column_names)
+   # print(team.column_names)
     team.get_totals(alphabet_teams[i])
     if i == 0:
         team.save_to_file("data/output/trial1.txt")
@@ -104,3 +114,37 @@ for i, team in enumerate(team_tables):
 # Believe we now have our training sets and can use a testing set as well for 24-25
 # Need to add a parralel array for yes/no on playoffs made? Or win/loss ratio
 # Or could do just wins, or could do all of this
+
+# Data visualization coding
+
+import matplotlib.pyplot as plt
+
+
+nba_data = MyPyTable().load_from_file("data/output/trial1.txt")
+plt.figure
+xs = nba_data.get_column("Wins")
+plt.hist(xs, bins=10, edgecolor='black')
+plt.title("Amount of teams with N wins through 20 games")
+plt.xlabel("Number of wins")
+plt.ylabel("Number of teams")
+'''
+xs = auto_table.get_column("model year")
+plt.hist(xs, bins=10, edgecolor='black')
+plt.title("Number of Cars per Model Year")
+plt.xlabel("Model Year")
+plt.ylabel("Count of Cars")
+
+plt.figure()
+xs = auto_table.get_column("origin")
+plt.hist(xs, bins=10, edgecolor='black')
+plt.title("origin counts")
+plt.xlabel("origin")
+plt.ylabel("Count of Cars")
+
+plt.figure()
+xs = auto_table.get_column("cylinders")
+plt.hist(xs, bins=10, edgecolor='black')
+plt.title("Number of Cars with each amount of Cylinders")
+plt.xlabel("CylinderCount")
+plt.ylabel("Count of Cars")
+'''

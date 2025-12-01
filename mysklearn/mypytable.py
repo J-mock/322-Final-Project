@@ -508,7 +508,7 @@ class MyPyTable:
     def get_totals(self, team_name):
         n_cols = len(self.column_names)
         sums = [team_name] + [0] * n_cols
-        print(sums)
+        #print(sums)
         totals = []
         for row in self.data:
             for i, val in enumerate(row):
