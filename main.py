@@ -84,6 +84,7 @@ files = sorted(folder.glob("*.txt"))  # alphabetical order
 
 team_tables = [MyPyTable().load_from_file(str(f)) for f in files]
 
+
 for i, team in enumerate(team_tables):
     team.drop_column(cols_to_drop)
     myutils.get_first_n_games(team, 20)
@@ -94,3 +95,12 @@ for i, team in enumerate(team_tables):
         team.save_to_file("data/output/trial1.txt")
     else:
         team.save_DATA_to_file("data/output/trial1.txt")
+
+# After running loop with helper functions, we have an ouput file of cleaned data
+# The data contains stats and wins for each team
+# From herre, we also have the total stats and all that for teamns through the regular season
+# We want to predict total wins, and from there we can use that to determine whether or not they will make the playoffs
+
+# Believe we now have our training sets and can use a testing set as well for 24-25
+# Need to add a parralel array for yes/no on playoffs made? Or win/loss ratio
+# Or could do just wins, or could do all of this
