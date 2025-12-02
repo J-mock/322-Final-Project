@@ -95,50 +95,70 @@ def random_subsample(X, y, k, mykNN, myDumm):
 
     return X_train_samples, X_test_samples, y_train_samples, y_test_samples
 
-def cross_val_predict(X, y, k, mykNN, myDum):
+def cross_val_predict(X, y, k, myClass):
     folds = myevaluation.kfold_split(X, k)
-    kNN_acc = 0
-    kNN_precision = 0
-    kNN_recall = 0
-    kNN_F1 = 0
-    
-    dum_acc = 0
-    dum_precision = 0
-    dum_recall = 0
-    dum_F1 = 0
+    class_acc = 0
+    class_precision = 0
+    class_recall = 0
+    class_F1 = 0
+    tot_tp = 0
+    tot_tn = 0
+    tot_fn = 0
+    tot_fp = 0
+
     for fold in folds:
+        #clf = myClass()
         X_train = [X[i] for i in fold[0]]
         y_train = [y[i] for i in fold[0]]
-        mykNN.fit(X_train, y_train)
-        myDum.fit(X_train, y_train)
+        myClass.fit(X_train, y_train)
+        
         X_test = [X[i] for i in fold[1]]
         y_test = [y[i] for i in fold[1]]
-        y_pred = mykNN.predict(X_test)
+        y_pred = myClass.predict(X_test)
         y_true = y_test
-        kNN_acc += myevaluation.accuracy_score(y_true, y_pred)
-        kNN_precision += myevaluation.binary_precision_score(y_true, y_pred)
-        kNN_recall += myevaluation.binary_recall_score(y_true, y_pred)
-        kNN_F1 += myevaluation.binary_f1_score(y_true, y_pred)
-        
-        y_pred = myDum.predict(y_test)
-        dum_acc += myevaluation.accuracy_score(y_true, y_pred)
-        dum_precision += myevaluation.binary_precision_score(y_true, y_pred)
-        dum_recall += myevaluation.binary_recall_score(y_true, y_pred)
-        dum_F1 += myevaluation.binary_f1_score(y_true, y_pred)
+        class_acc += myevaluation.accuracy_score(y_true, y_pred)
+        class_precision += myevaluation.binary_precision_score(y_true, y_pred)
+        class_recall += myevaluation.binary_recall_score(y_true, y_pred)
+        class_F1 += myevaluation.binary_f1_score(y_true, y_pred)
+        tp, fp, tn, fn = conf_matrix_stats(y_true, y_pred)
+        tot_tp += tp
+        tot_fp += fp
+        tot_tn += tn
+        tot_fn += fn
 
+
+    headers = ['', 'Yes', 'No']
+    data = [['Yes', tot_tp, tot_fn],
+            ['No', tot_fp, tot_tn]]
+    print("Playoffs Made Classifier Evaluation")
+    print("Actual on the left, predicted on the top")
+    print(tabulate(data, headers, tablefmt='grid'))
     print("===================================================")
     print("Predictive Accuracy, Precision, Recall, F1 Measure")
     print("===================================================")
-    print("10-Fold Cross Validation")
-    print("k Nearest Neighbors Classifier: accuracy =", kNN_acc / k, "error rate =", 1 -(kNN_acc / k))
-    print("k Nearest Neighbors Classifier: Precision =", kNN_precision / k, "error rate =", 1 -(kNN_precision / k))
-    print("k Nearest Neighbors Classifier: Recall =", kNN_recall / k, "error rate =", 1 -(kNN_recall / k))
-    print("k Nearest Neighbors Classifier: F1 =", kNN_F1 / k, "error rate =", 1 -(kNN_F1 / k))
-    print("Dummy Classifier: accuracy =", dum_acc / k, "error rate =", 1 -(dum_acc / k))
-    print("Dummy Classifier: Precision =", dum_precision / k, "error rate =", 1 -(dum_precision / k))
-    print("Dummy Classifier: Recall =", dum_recall / k, "error rate =", 1 -(dum_recall / k))
-    print("Dummy Classifier: F1 Measure =", dum_F1 / k, "error rate =", 1 -(dum_F1 / k))
+    print(k, "Fold Cross Validation")
+    print("Accuracy =", round((class_acc / k), 2), "error rate =", round((1 - (class_acc / k)), 2))
+    print("Precision =", round((class_precision / k), 2), "error rate =", round((1 -(class_precision / k)), 2))
+    print("Recall =", round((class_recall / k), 2), "error rate =", round((1 -(class_recall / k)), 2))
+    print("F1 Score =", round((class_F1 / k), 2), "error rate =", round((1 -(class_F1 / k)), 2))
     
+def conf_matrix_stats(actual, predicted):
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    for a, p in zip(actual, predicted):
+        if a == 'yes' and p == 'yes':
+            tp += 1
+        elif a == 'no' and p == 'no':
+            tn += 1
+        elif a == 'yes' and p == 'no':
+            fn += 1
+        elif a == 'no' and p == 'yes':
+            fp += 1
+
+    return tp, fp, tn, fn
+
 
 def bootstrap_method(X, y, k, mykNN, myDum):
     knn_acc = 0
@@ -509,4 +529,33 @@ def bin_nba_data(data):
     return binned_data
 
 
+def nba_class_performance_view(actual, predicted):
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    for a, p in zip(actual, predicted):
+        if a == 'yes' and p == 'yes':
+            tp += 1
+        elif a == 'no' and p == 'no':
+            tn += 1
+        elif a == 'yes' and p == 'no':
+            fn += 1
+        elif a == 'no' and p == 'yes':
+            fp += 1
 
+   
+    accuracy = myevaluation.accuracy_score(actual, predicted)
+    recall = myevaluation.binary_recall_score(actual, predicted)
+    f1 = myevaluation.binary_f1_score(actual, predicted)
+    headers = ['', 'Yes', 'No']
+    data = [['Yes', tp, fn],
+            ['No', fp, tn]]
+    print("Playoffs made accuracy")
+    print("Actual on the left, predicted on the top")
+    print(tabulate(data, headers, tablefmt='grid'))
+    print("Accuracy:", round(accuracy, 2))
+    print("Recall:", round(recall, 2))
+    print("F1 Score:", round(f1, 2))
+
+ 

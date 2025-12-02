@@ -255,7 +255,280 @@ def get_prediction_difference(actual, predicted):
     return average
     
 
+# Decision tree helper functions
 
 
+def get_full_train(X_train, y_train):
+    new_train = [row.copy() for row in X_train]
+    for row, val in zip(new_train, y_train):
+        row.append(val)
+    
+    return new_train
+
+def get_header(X_train):
+    header = []
+    for i, _ in enumerate(X_train[0]):
+        header.append(f"att{i}")
+
+    return header
+
+def get_attribute_domains(header, X_train):
+    attribute_domains = {}
+    for i, val in enumerate(header):
+        col_vals = list(sorted(set(row[i] for row in X_train)))
+        if val not in attribute_domains:
+            attribute_domains[val] = col_vals
+    
+    return attribute_domains
+
+def sing_ent(instances):
+    # Want to pass in a single value for given attribute
+    if len(instances) == 0:
+        return 0
+    
+    counts = {}
+
+    for row in instances:
+        if row[-1] not in counts:
+            counts[row[-1]] = 0
+        counts[row[-1]] += 1
+    total = len(instances)
+    pros = [count / total for count in counts.values()]
+    ent = 0
+    for prob in pros:
+        ent += prob * np.log2(prob)
+        #print(ent)
+    #print(ent)
+    return -ent
+
+def calculate_attribute_entropy(instances, attribute, attribute_domain, header):
+    att_ent = 0
+    partitions = partition_instances(instances, attribute, attribute_domain, header)
+    for partition in partitions.values():
+        weight = len(partition) / len(instances)
+        
+        att_ent += weight * sing_ent(partition)
+
+    return att_ent
+
+def select_attribute(instances, attributes, attribute_domain, header):
+    # TODO: implement the general Enew algorithm for attribute selection
+    # for each available attribute
+    #     for each value in the attribute's domain
+    #          calculate the entropy for the value's partition
+    #     calculate the weighted average for the parition entropies
+    # select that attribute with the smallest Enew entropy
+    # for now, select an attribute randomly
+    best_ent = calculate_attribute_entropy(instances, attributes[0], attribute_domain, header)
+    #print("test")
+    best_attribute = attributes[0]
+    for attribute in attributes:
+        entrop = calculate_attribute_entropy(instances, attribute, attribute_domain, header)
+        #print(entrop)
+        if entrop < best_ent:
+            #print(best_attribute)
+            best_attribute = attribute
+
+    
+    #rand_index = np.random.randint(0, len(attributes))
+    #print(best_attribute)
+    return best_attribute
+
+def partition_instances(instances, attribute, attribute_domains, header):
+    # this is group by attribute domain (not values of attribute in instances)
+    # Returns a dictionary: {attribute_value: [instances]}
+    att_index = header.index(attribute)
+    att_domain = attribute_domains[attribute]
+    partitions = {}
+    for att_value in att_domain: # "Junior" -> "Mid" -> "Senior"
+        partitions[att_value] = []
+        for instance in instances:
+            if instance[att_index] == att_value:
+                partitions[att_value].append(instance)
+
+    return partitions
+
+def all_same_class(instances):
+    # get the class label of the first instance.
+    first_class = instances[0][-1]
+    for instance in instances:
+        # if any label differs, return False immediately.
+        if instance[-1] != first_class:
+            return False
+        
+    # if the loop completes without finding differences, return True.
+    return True 
+
+def tdidt(current_instances, available_attributes, attribute_domain, header):
+    
+    #    Recursively building a decision tree using the TDIDT algorithm.
+
+    #     1. Select the best attribute to split on and create an "Attribute" node.
+    #     2. For each value of the selected attribute:
+    #         a. Create a "Value" subtree.
+    #         b. If all instances in this partition have the same class:
+    #             - Append a "Leaf" node
+    #         c. If there are no more attributes to select:
+    #             - Append a "Leaf" node (handle clash w/majority vote leaf node)
+    #         d. If the partition is empty:
+    #             - Append a "Leaf" node (backtrack and replace attribute node with majority vote leaf node)
+    #         e. Otherwise:
+    #             - Recursively build another "Attribute" subtree for this partition
+    #               and append it to the "Value" subtree.
+    #     3. Append each "Value" subtree to the current "Attribute" node.
+    #     4. Return the current tree (nested list structure).
+
+    
+
+    #print("available attributes:", available_attributes)
+    
+    # select an attribute to split on
+    split_attribute = select_attribute(current_instances, available_attributes, attribute_domain, header)
+    #print("splitting on:", split_attribute)
+    available_attributes.remove(split_attribute) # can't split on this attribute again in this subtree
+
+    tree = ["Attribute", split_attribute]
+
+    # group data by attribute domains (creates pairwise disjoint partitions)
+    partitions = partition_instances(current_instances, split_attribute, attribute_domain, header)
+    #print("partitions:", partitions)
+    
+    # for each partition, repeat unless one of the following occurs (base case)
+    for att_value in sorted(partitions.keys()): # process in alphabetical order
+        att_partition = partitions[att_value]
+        #print("Attribute partition:", att_partition)
+        value_subtree = ["Value", att_value]
+
+        #    CASE 1: all class labels of the partition are the same
+        # => make a leaf node
+        if len(att_partition) > 0 and all_same_class(att_partition):
+            #print("CASE 1")
+            #print(att_partition)
+            leaf = ["Leaf", att_partition[0][-1], len(att_partition), len(current_instances)]
+            value_subtree.append(leaf)
+            
+            
+
+        #    CASE 2: no more attributes to select (clash)
+        # => handle clash w/majority vote leaf node
+        elif len(att_partition) > 0 and len(available_attributes) == 0:
+            #print("CASE 2")
+            #labels = set(att_partition[-1])
+            counts = {}
+            for row in att_partition:
+                if row[-1] not in counts:
+                    counts[row[-1]] = 0
+                counts[row[-1]] += 1
+
+            majority = max(counts, key=counts.get)
+            maxi = counts[majority]
+
+            leaf = ["Leaf", majority, len(att_partition), len(current_instances)]
+            value_subtree.append(leaf)
+            
 
 
+        #    CASE 3: no more instances to partition (empty partition)
+        # => backtrack and replace attribute node with majority vote leaf node
+        elif len(att_partition) == 0:
+            #print("CASE 3")
+            counts = {}
+            for row in current_instances:
+                if row[-1] not in counts:
+                    counts[row[-1]] = 0
+                counts[row[-1]] += 1
+            majority = None
+            maxi = 0
+            for key, count in counts.items():
+                if count > maxi:
+                    maxi = count
+                    majority = key
+            leaf = ["Leaf", majority, maxi, len(current_instances)]
+            value_subtree.append(leaf)
+
+        else:
+            # none of base cases were true, recurse!!
+            subtree = tdidt(att_partition, available_attributes.copy(), attribute_domain, header)
+            value_subtree.append(subtree)
+            
+        tree.append(value_subtree)
+        # TODO: append subtree to value_subtree and value_subtree to tree appropriately
+    return tree
+
+
+def tdidt_predict(tree, instance, header):
+    data_type = tree[0]
+
+    # Base case: if this is a leaf, just return its class label
+    if data_type == "Leaf":
+        label = tree[1]
+        return label
+    
+    # Recursive case:if we are here, this is an Attribute node
+    attribute_name = tree[1]
+    attribute_index = header.index(attribute_name)
+    instance_value = instance[attribute_index]
+
+    # Look for the matching value node
+    for values in tree[2:]:
+        value = values[1]
+        subtree = values[2]
+        
+        if instance_value == value:
+            return tdidt_predict(subtree, instance, header)
+        
+def bin_nba_data(data):
+    binned_data = []
+    num_cols = len(data[0])
+    cols = [list(col) for col in zip(*data)]
+    # Now have list of lists cols
+    cutoffs = []
+    num_vals = len(cols[0])
+    for col in cols:
+        cutoff = []
+        sorted_col = sorted(col)
+        # Value at index 1/3 
+        pct_33 = sorted_col[int(num_vals * 1/3)]
+        # Value at index 2/3
+        pct_66 = sorted_col[int(num_vals * 2/3)]
+        cutoff.append(pct_33)
+        cutoff.append(pct_66)
+        cutoffs.append(cutoff)
+    
+    for cutoff, col in zip(cutoffs, cols):
+        for i, val in enumerate(col):
+            if val < cutoff[0]:
+                col[i] = "bad"
+            elif val > cutoff[1]:
+                col[i] = "good"
+            else:
+                col[i] = "average"
+    
+    binned_data = [list(row) for row in zip(*cols)]
+
+    return binned_data
+
+
+def nba_class_performance_view(actual, predicted):
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    for a, p in zip(actual, predicted):
+        if a == p and a == 'yes':
+            tp += 1
+        elif a == p and a == 'no':
+            tn += 1
+        elif a != p and a == 'yes':
+            fn += 1
+        else:
+            fp += 1
+
+   
+    
+    headers = ['', 'Yes', 'No']
+    data = [['Yes', tp, fn],
+            ['No', fn, tn]]
+    print(tabulate(data, headers, tablefmt='grid'))
+
+ 

@@ -153,3 +153,9 @@ plt.title("Number of Cars with each amount of Cylinders")
 plt.xlabel("CylinderCount")
 plt.ylabel("Count of Cars")
 '''
+
+
+
+# For Random Forests:
+# Most likely want to do k-Fold cross validation as our dataset is small and we don't want any bias
+#
