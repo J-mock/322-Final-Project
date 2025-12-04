@@ -2,7 +2,7 @@ from mysklearn import myutils
 from mysklearn import myevaluation
 from mysklearn.mysimplelinearregressor import MySimpleLinearRegressor
 import numpy as np
-#import graphviz
+import graphviz
 
 class MySimpleLinearRegressionClassifier:
     """Represents a simple linear regression classifier that discretizes
@@ -428,7 +428,6 @@ class MyDecisionTreeClassifier:
         pass # TODO: fix this
 
     # BONUS method
-    '''
     def visualize_tree(self, dot_fname, pdf_fname, attribute_names=None):
         """BONUS: Visualizes a tree via the open source Graphviz graph visualization package and
         its DOT graph language (produces .dot and .pdf files).
@@ -489,7 +488,7 @@ class MyDecisionTreeClassifier:
                 self._get_dot_code_recursive(subtree, dot, current_node_id, repr(value), display_attribute_names_map)
         
         return current_node_id
-        '''
+
 
 class MyRandomForestsClassifier:
     def __init__(self, n_trees):
