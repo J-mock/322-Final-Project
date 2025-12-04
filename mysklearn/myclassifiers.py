@@ -472,7 +472,11 @@ class MyRandomForestsClassifier:
             for tree in self.forest:
                 test_instance = []
                 test_instance.append(instance)
-                all_preds.append(tree.predict(test_instance))
+                preds = tree.predict(test_instance)
+                all_preds.append(preds[0])
+                #all_preds.append(tree.predict(test_instance))
+
+
             vote = max(set(all_preds), key=all_preds.count)
             predicted.append(vote)
             

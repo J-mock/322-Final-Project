@@ -1,5 +1,5 @@
 import mysklearn.mypytable
-
+from mysklearn.myclassifiers import MyRandomForestsClassifier
 from mysklearn.mypytable import MyPyTable 
 from mysklearn import myutils
 
@@ -128,7 +128,7 @@ plt.title("Amount of teams with N wins through 20 games")
 plt.xlabel("Number of wins")
 plt.ylabel("Number of teams")
 
-X = myutils.get_instances(nba_data, ["Wins"])
+X = myutils.get_instances(nba_data, ["Wins", "2P", "3P,", "3PA", "2PA"])
 X = myutils.bin_nba_data(X)
 print(X)
 #myutils.bin_nba_data(nba_data.data)
@@ -155,7 +155,13 @@ plt.ylabel("Count of Cars")
 '''
 
 
+myForest = MyRandomForestsClassifier(n_trees=3)
+y = playoffs_made_test
+myForest.fit(X, y)
+X_test = X[0:10]
+actual = y[0:10]
+predicted = myForest.predict(X_test)
 
-# For Random Forests:
-# Most likely want to do k-Fold cross validation as our dataset is small and we don't want any bias
-#
+myutils.nba_class_performance_view(actual, predicted)
+
+
