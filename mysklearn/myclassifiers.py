@@ -1,4 +1,5 @@
 from mysklearn import myutils
+from mysklearn import myevaluation
 from mysklearn.mysimplelinearregressor import MySimpleLinearRegressor
 import numpy as np
 
@@ -443,6 +444,47 @@ class MyDecisionTreeClassifier:
             You will need to install graphviz in the Docker container as shown in class to complete this method.
         """
         pass # TODO: (BONUS) fix this
+
+class MyRandomForestsClassifier:
+    def __init__(self, n_trees):
+        self.n_trees = n_trees
+        self.forest = []
+
+    def fit(self, X, y, n_trees=3):
+
+        for i in range(n_trees):
+            tree = MyDecisionTreeClassifier()
+            X_train, X_test, y_train, y_test = myevaluation.bootstrap_sample(X, y)
+
+            tree.fit(X_train, y_train)
+            self.forest.append(tree)
+            
+        return self.forest
+        
+
+    def predict(self, X_test):
+        '''
+        X_test = list of list object (list of the instances to predict)
+        '''
+        predicted = []
+        for instance in X_test:
+            all_preds = []
+            for tree in self.forest:
+                test_instance = []
+                test_instance.append(instance)
+                all_preds.append(tree.predict(test_instance))
+            vote = max(set(all_preds), key=all_preds.count)
+            predicted.append(vote)
+            
+
+
+
+        
+        return predicted # TODO: fix this
+        
+
+
+
 
 class MyDummyClassifier:
     """Represents a "dummy" classifier using the "most_frequent" strategy.
