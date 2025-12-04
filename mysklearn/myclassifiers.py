@@ -2,6 +2,7 @@ from mysklearn import myutils
 from mysklearn import myevaluation
 from mysklearn.mysimplelinearregressor import MySimpleLinearRegressor
 import numpy as np
+import graphviz
 
 class MySimpleLinearRegressionClassifier:
     """Represents a simple linear regression classifier that discretizes
@@ -443,7 +444,51 @@ class MyDecisionTreeClassifier:
             DOT language: https://graphviz.org/doc/info/lang.html
             You will need to install graphviz in the Docker container as shown in class to complete this method.
         """
-        pass # TODO: (BONUS) fix this
+        if self.tree is None:
+            print("Tree has not been fitted yet. Cannot visualize.")
+            return
+        
+        dot = graphviz.Digraph(comment='Decision Tree', graph_attr={'rankdir': 'TB'})
+        self.node_counter = 0
+        
+        display_attribute_names_map = {}
+        if attribute_names is not None and len(attribute_names) == self.n_features:
+            for i in range(self.n_features):
+                display_attribute_names_map[self.attribute_names[i]] = attribute_names[i]
+        else:
+            for i in range(self.n_features):
+                display_attribute_names_map[self.attribute_names[i]] = self.attribute_names[i]
+        
+        self._get_dot_code_recursive(self.tree, dot, None, None, display_attribute_names_map)
+        
+        dot.render(dot_fname, view=False, format='dot', cleanup=True)
+        dot.render(pdf_fname, view=False, format='pdf', cleanup=True)
+        print(f"Decision tree visualization saved to {pdf_fname}.pdf and {dot_fname}.dot")
+
+    def _get_dot_code_recursive(self, node, dot, parent_node_id, edge_label, display_attribute_names_map):
+        current_node_id = str(self.node_counter)
+        self.node_counter += 1
+        if node[0] == "Leaf":
+            label = f"Class: {repr(node[1])}\n({node[2]}/{node[3]})"
+            dot.node(current_node_id, label, shape="ellipse", style="filled", fillcolor="lightgreen")
+        else:
+            internal_att_name = node[1]
+            display_att_name = display_attribute_names_map[internal_att_name]
+            label = f"Split on: {display_att_name}"
+            dot.node(current_node_id, label, shape="box", style="filled", fillcolor="lightblue")
+
+        if parent_node_id is not None:
+            dot.edge(parent_node_id, current_node_id, label=str(edge_label))
+            
+        if node[0] == "Attribute":
+            for i in range(2, len(node)):
+                value_branch = node[i]
+                value = value_branch[1]
+                subtree = value_branch[2]
+                self._get_dot_code_recursive(subtree, dot, current_node_id, repr(value), display_attribute_names_map)
+        
+        return current_node_id
+
 
 class MyRandomForestsClassifier:
     def __init__(self, n_trees):
