@@ -357,6 +357,8 @@ class MyDecisionTreeClassifier:
         self.X_train = None
         self.y_train = None
         self.tree = None
+        self.n_features = None
+        self.attribute_names = None
 
     def fit(self, X_train, y_train):
         """Fits a decision tree classifier to X_train and y_train using the TDIDT
@@ -379,6 +381,10 @@ class MyDecisionTreeClassifier:
         # Build the set and the attribute domains:
         new_train = myutils.get_full_train(X_train, y_train)
         header = myutils.get_header(X_train)
+        if self.attribute_names is None:
+            self.attribute_names = header
+        
+        self.n_features = len(header)
         attribute_domains = myutils.get_attribute_domains(header, X_train)
         #print(header)
         #print(new_train)

@@ -158,10 +158,11 @@ plt.ylabel("Count of Cars")
 myForest = MyRandomForestsClassifier(n_trees=3)
 y = playoffs_made_test
 myForest.fit(X, y)
-X_test = X[0:10]
-actual = y[0:10]
+X_test = X[15:20]
+actual = y[15:20]
 predicted = myForest.predict(X_test)
-
+attribute_names = nba_data.column_names
+myForest.forest[0].visualize_tree("tree_test", 'tree_test', attribute_names=nba_data.column_names)
 myutils.nba_class_performance_view(actual, predicted)
 
 

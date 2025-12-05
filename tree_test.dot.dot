@@ -1,0 +1,78 @@
+digraph {
+	graph [bb="0,0,430.35,245.48",
+		rankdir=TB
+	];
+	node [label="\N"];
+	0	[fillcolor=lightblue,
+		height=0.5,
+		label="Split on: att0",
+		pos="215.18,227.48",
+		shape=box,
+		style=filled,
+		width=1.5278];
+	1	[fillcolor=lightgreen,
+		height=0.74639,
+		label="Class: 'yes'
+(6/18)",
+		pos="70.175,131.61",
+		shape=ellipse,
+		style=filled,
+		width=1.866];
+	0 -> 1	[label="'average'",
+		lp="178.68,183.98",
+		pos="e,98.112,156.31 178.29,209.39 167.69,204.05 156.28,197.87 146.18,191.48 132.52,182.84 118.33,172.32 105.96,162.57"];
+	2	[fillcolor=lightblue,
+		height=0.5,
+		label="Split on: att10",
+		pos="215.18,131.61",
+		shape=box,
+		style=filled,
+		width=1.6528];
+	0 -> 2	[label="'bad'",
+		lp="232.18,183.98",
+		pos="e,215.18,149.72 215.18,209.26 215.18,195.5 215.18,175.95 215.18,160.04"];
+	6	[fillcolor=lightgreen,
+		height=0.74639,
+		label="Class: 'no'
+(7/18)",
+		pos="355.18,131.61",
+		shape=ellipse,
+		style=filled,
+		width=1.7481];
+	0 -> 6	[label="'good'",
+		lp="311.68,183.98",
+		pos="e,322.25,154.69 240.85,209.26 261.24,195.59 290.15,176.21 313.8,160.35"];
+	3	[fillcolor=lightgreen,
+		height=0.74639,
+		label="Class: 'yes'
+(1/5)",
+		pos="67.175,26.87",
+		shape=ellipse,
+		style=filled,
+		width=1.866];
+	2 -> 3	[label="'average'",
+		lp="178.68,79.24",
+		pos="e,97.18,51.047 187.34,113.57 174.64,105.63 159.5,95.923 146.18,86.74 132.66,77.425 118.17,66.82 105.34,57.202"];
+	4	[fillcolor=lightgreen,
+		height=0.74639,
+		label="Class: 'no'
+(1/5)",
+		pos="215.18,26.87",
+		shape=ellipse,
+		style=filled,
+		width=1.7481];
+	2 -> 4	[label="'bad'",
+		lp="232.18,79.24",
+		pos="e,215.18,53.883 215.18,113.18 215.18,99.717 215.18,80.621 215.18,63.909"];
+	5	[fillcolor=lightgreen,
+		height=0.74639,
+		label="Class: 'yes'
+(3/5)",
+		pos="363.18,26.87",
+		shape=ellipse,
+		style=filled,
+		width=1.866];
+	2 -> 5	[label="'good'",
+		lp="319.68,79.24",
+		pos="e,330.53,50.531 239.95,113.41 262.37,97.847 295.83,74.618 322.23,56.293"];
+}
