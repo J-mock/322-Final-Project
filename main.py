@@ -128,7 +128,7 @@ plt.title("Amount of teams with N wins through 20 games")
 plt.xlabel("Number of wins")
 plt.ylabel("Number of teams")
 
-X = myutils.get_instances(nba_data, ["Wins", "2P", "3P,", "3PA", "2PA"])
+X = nba_data.data.copy()
 X = myutils.bin_nba_data(X)
 print(X)
 #myutils.bin_nba_data(nba_data.data)
